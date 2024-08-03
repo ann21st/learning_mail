@@ -1,0 +1,59 @@
+name: learning_mail
+
+services:
+  postfix:
+    image: learning_mall_postfix:latest
+    build:
+      context: .
+      target: postfix
+    # networks:
+    #   - learning_mail
+    hostname: smtp.mail.internal
+    domainname: mail.internal
+    init: true
+    tty: true
+    extra_hosts:
+      - "internal.raspberry.io:192.168.0.103"
+      - "smtp.mail.internal:192.168.0.107"
+      - "imap.mail.internal:192.168.0.107"
+      - "mail.internal:192.168.0.107"
+    volumes:
+      - ".:/app"
+      - ./postfix/main1.cf:/etc/postfix/main.cf
+      # - maildata:/var/spool/postfix
+    ports:
+      - 25:25
+      - 587:587
+      - 110:110
+      - 143:143
+      - 993:993
+  # dovecot:
+  #   image: learning_mall_dovecot:latest
+  #   build:
+  #     context: .
+  #     target: dovecot
+  #   networks:
+  #     - learning_mail
+  #   hostname: imap.mail.internal
+  #   domainname: mail.internal
+  #   depends_on:
+  #     - postfix
+  #   init: true
+  #   tty: true
+  #   volumes:
+  #     - maildata:/var/spool/postfix
+  #   extra_hosts:
+  #     - "internal.raspberry.io:192.168.0.103"
+  #     - "smtp.mail.internal:192.168.0.107"
+  #     - "imap.mail.internal:192.168.0.107"
+  #   ports:
+  #     - 110:110
+  #     - 143:143
+  #     - 993:993
+
+networks:
+  learning_mail:
+    driver: bridge
+
+# volumes:
+#   maildata:
